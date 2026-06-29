@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YIELD COMPANION — Voice AI with Desktop PC Control</title>
+  <meta name="description" content="Download YIELD COMPANION — a voice AI assistant that controls your Windows desktop. Wake-word driven, local-first, and free." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner container">
+      <span class="nav-logo">✦ YIELD COMPANION</span>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#download" class="btn btn-sm" onclick="trackDownload()">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-inner">
+      <div class="hero-badge">v1.0.0 — Windows</div>
+      <h1>Your voice.<br />Your desktop.<span class="accent"> One AI.</span></h1>
+      <p class="hero-sub">
+        YIELD COMPANION is a voice AI assistant that lives on your PC.
+        Wake it with a word, ask it anything, and it can control your desktop —
+        no cloud dependency, no data leaving your machine.
+      </p>
+      <div class="hero-cta">
+        <a href="https://github.com/ilyasify12/yield-companion/releases/download/v1.0.0/YIELD-COMPANION-Setup-1.0.0.exe" class="btn btn-lg btn-primary" id="downloadBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download for Windows
+        </a>
+        <span class="hero-meta">Installer — 119 MB</span>
+      </div>
+      <div class="hero-features-mini">
+        <span>✓ Wake word detection</span>
+        <span>✓ Desktop control</span>
+        <span>✓ Local-first</span>
+        <span>✓ Free</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="section">
+    <div class="container">
+      <h2 class="section-title">Built for your workflow</h2>
+      <p class="section-sub">Everything runs locally — your voice never leaves your PC.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎙️</div>
+          <h3>Voice AI</h3>
+          <p>Natural conversation with a powerful AI model. Ask questions, get answers, dictate actions — hands-free.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🖥️</div>
+          <h3>Desktop Control</h3>
+          <p>Open apps, control media, manage windows, search files, and run commands — all by speaking.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔊</div>
+          <h3>Wake Word</h3>
+          <p>Say "Mia" or "James" to activate. No buttons, no hotkeys — just talk when you need it.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Local-First</h3>
+          <p>Your data stays on your machine. Works offline for core features. No cloud uploads, no privacy concerns.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📸</div>
+          <h3>Screen Awareness</h3>
+          <p>Optionally share screen context for smarter assistance — with full manual control over when it sees.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Fast & Lightweight</h3>
+          <p>Built on Electron with a tiny footprint. Runs in your system tray, ready when you are.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how-it-works" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title">How it works</h2>
+      <p class="section-sub">Three simple steps to get started.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Download & Install</h3>
+          <p>Run the installer — it's lightweight, signed, and clean. No bundled adware or toolbars.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Launch & Train</h3>
+          <p>Open the app, say the wake word ("Mia" or "James") once to train it to your voice, and you're set.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Talk to your PC</h3>
+          <p>Say the wake word anytime to start a command. Ask questions, control apps, or just chat.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- System Requirements -->
+  <section id="requirements" class="section">
+    <div class="container">
+      <h2 class="section-title">System Requirements</h2>
+      <div class="req-grid">
+        <div class="req-item">
+          <span class="req-label">OS</span>
+          <span class="req-value">Windows 10 / 11 (64-bit)</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Processor</span>
+          <span class="req-value">Intel Core i3 / AMD Ryzen 3 or better</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Memory</span>
+          <span class="req-value">4 GB RAM minimum</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Storage</span>
+          <span class="req-value">500 MB available</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Microphone</span>
+          <span class="req-value">Required for voice interaction</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Internet</span>
+          <span class="req-value">Required for AI queries (optional for basic control)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download CTA -->
+  <section id="download" class="section section-cta">
+    <div class="container">
+      <h2 class="section-title">Ready to try it?</h2>
+      <p class="section-sub">Download the installer and start using YIELD COMPANION in minutes.</p>
+      <a href="https://github.com/ilyasify12/yield-companion/releases/download/v1.0.0/YIELD-COMPANION-Setup-1.0.0.exe" class="btn btn-lg btn-primary" id="downloadBtn2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download YIELD COMPANION
+      </a>
+      <p class="hero-meta" style="margin-top: 0.75rem;">v1.0.0 · Windows · 119 MB · Free</p>
+      <p class="version-info">See <a href="https://github.com/ilyasify12/yield-companion/releases" target="_blank">releases</a> for older versions and changelog.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> YIELD</span>
+      <span class="footer-divider">·</span>
+      <span>Built with Electron</span>
+      <span class="footer-divider">·</span>
+      <span>MIT License</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
