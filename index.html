@@ -12,6 +12,10 @@
 </head>
 <body>
 
+  <div class="noise"></div>
+  <div class="grid-overlay"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
   <!-- Navigation -->
   <nav class="nav">
     <div class="nav-inner container">
@@ -26,7 +30,11 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-bg"></div>
+    <div class="hero-bg">
+      <div class="hero-orb hero-orb--1"></div>
+      <div class="hero-orb hero-orb--2"></div>
+      <div class="hero-orb hero-orb--3"></div>
+    </div>
     <div class="container hero-inner">
       <div class="hero-badge">v1.0.0 — Windows</div>
       <h1>Talk to your PC.<br />It actually <span class="gradient">listens</span>.</h1>
@@ -58,34 +66,76 @@
       <p class="section-sub">Everything runs locally. Your voice never leaves your machine.</p>
       <div class="features-grid">
         <div class="feature-card">
-          <div class="feature-icon">🎙️</div>
-          <h3>Voice AI</h3>
-          <p>Natural, real-time conversations with a powerful AI model. Ask questions, get answers, dictate actions — all without lifting a finger.</p>
+          <div class="feature-card-border"></div>
+          <div class="feature-card-glow"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <div class="feature-icon-glow"></div>
+              🎙️
+            </div>
+            <h3>Voice AI</h3>
+            <p>Natural, real-time conversations with a powerful AI model. Ask questions, get answers, dictate actions — all without lifting a finger.</p>
+          </div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🖥️</div>
-          <h3>Desktop Control</h3>
-          <p>Open applications, manage windows, play music, search files, and execute commands — just by speaking. Your voice is your mouse.</p>
+          <div class="feature-card-border"></div>
+          <div class="feature-card-glow"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <div class="feature-icon-glow"></div>
+              🖥️
+            </div>
+            <h3>Desktop Control</h3>
+            <p>Open applications, manage windows, play music, search files, and execute commands — just by speaking. Your voice is your mouse.</p>
+          </div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🔊</div>
-          <h3>Wake Word</h3>
-          <p>Say "Mia" or "James" and it's ready. No clicking, no hotkeys, no buttons — it listens when you need it, ignores when you don't.</p>
+          <div class="feature-card-border"></div>
+          <div class="feature-card-glow"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <div class="feature-icon-glow"></div>
+              🔊
+            </div>
+            <h3>Wake Word</h3>
+            <p>Say "Mia" or "James" and it's ready. No clicking, no hotkeys, no buttons — it listens when you need it, ignores when you don't.</p>
+          </div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🔒</div>
-          <h3>Local & Private</h3>
-          <p>Your data stays on your PC. No cloud uploads, no accounts, no tracking. Works offline for core features — privacy isn't an afterthought.</p>
+          <div class="feature-card-border"></div>
+          <div class="feature-card-glow"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <div class="feature-icon-glow"></div>
+              🔒
+            </div>
+            <h3>Local & Private</h3>
+            <p>Your data stays on your PC. No cloud uploads, no accounts, no tracking. Works offline for core features — privacy isn't an afterthought.</p>
+          </div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">📸</div>
-          <h3>Screen Context</h3>
-          <p>Optionally let it see your screen for smarter, context-aware help. You're in full control — it only looks when you say so.</p>
+          <div class="feature-card-border"></div>
+          <div class="feature-card-glow"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <div class="feature-icon-glow"></div>
+              📸
+            </div>
+            <h3>Screen Context</h3>
+            <p>Optionally let it see your screen for smarter, context-aware help. You're in full control — it only looks when you say so.</p>
+          </div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>Lightweight</h3>
-          <p>Sits quietly in your system tray using minimal resources. Built with Electron — familiar, fast, and ready when you are.</p>
+          <div class="feature-card-border"></div>
+          <div class="feature-card-glow"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <div class="feature-icon-glow"></div>
+              ⚡
+            </div>
+            <h3>Lightweight</h3>
+            <p>Sits quietly in your system tray using minimal resources. Built with Electron — familiar, fast, and ready when you are.</p>
+          </div>
         </div>
       </div>
     </div>
