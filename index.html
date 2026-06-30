@@ -15,6 +15,7 @@
   <div class="noise"></div>
   <div class="grid-overlay"></div>
   <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="progress-bar" id="progressBar"></div>
 
   <!-- Navigation -->
   <nav class="nav">
@@ -36,25 +37,67 @@
       <div class="hero-orb hero-orb--3"></div>
     </div>
     <div class="container hero-inner">
-      <div class="hero-badge">v1.0.0 — Windows</div>
-      <h1>Talk to your PC.<br />It actually <span class="gradient">listens</span>.</h1>
-      <p class="hero-sub">
-        YIELD COMPANION is a desktop AI assistant powered by voice.
-        Wake it with a word, ask it anything, and it can open apps, search files,
-        control media, and answer questions — all hands-free, right on your Windows PC.
-      </p>
-      <div class="hero-cta">
-        <a href="https://github.com/ilyasify12/yield-companion/releases/download/v1.0.0/YIELD-COMPANION-Setup-1.0.0.exe" class="btn btn-lg btn-primary" id="downloadBtn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download for Windows
-        </a>
-        <span class="hero-meta">Installer — 119 MB</span>
+      <div class="hero-left">
+        <div class="hero-badge">v1.0.0 — Windows</div>
+        <h1>Talk to your PC.<br />It actually <span class="gradient">listens</span>.</h1>
+        <p class="hero-sub">
+          YIELD COMPANION is a desktop AI assistant powered by voice.
+          Wake it with a word, ask it anything, and it can open apps, search files,
+          control media, and answer questions — all hands-free, right on your Windows PC.
+        </p>
+        <div class="hero-cta">
+          <a href="https://github.com/ilyasify12/yield-companion/releases/download/v1.0.0/YIELD-COMPANION-Setup-1.0.0.exe" class="btn btn-lg btn-primary" id="downloadBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download for Windows
+          </a>
+          <span class="hero-meta">Installer — 119 MB</span>
+        </div>
+        <div class="hero-features-mini">
+          <span>Wake word detection</span>
+          <span>Desktop control</span>
+          <span>Local-first</span>
+          <span>Free</span>
+        </div>
       </div>
-      <div class="hero-features-mini">
-        <span>✓ Wake word detection</span>
-        <span>✓ Desktop control</span>
-        <span>✓ Local-first</span>
-        <span>✓ Free</span>
+      <div class="hero-right">
+        <div class="voice-ui">
+          <div class="voice-ui-status">
+            <span class="voice-ui-dot"></span>
+            Listening for "Mia"...
+          </div>
+          <div class="voice-wave">
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+          </div>
+          <div class="voice-transcript">
+            <div class="voice-line voice-line--you">
+              <span class="voice-line-label">You</span>
+              <span class="voice-line-text">Open Spotify and play my focus playlist</span>
+            </div>
+            <div class="voice-line voice-line--ai">
+              <span class="voice-line-label">AI</span>
+              <span class="voice-line-text">Opening Spotify and starting your focus playlist now.</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>

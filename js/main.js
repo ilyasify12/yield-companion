@@ -10,40 +10,71 @@ document.querySelectorAll('[id^="downloadBtn"]').forEach(btn => {
   });
 });
 
+// ── Scroll progress bar ─────────────────────────────────────────────
+const progressBar = document.getElementById('progressBar');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = window.scrollY / h;
+  progressBar.style.transform = `scaleX(${pct})`;
+}, { passive: true });
+
 // ── Cursor glow follower ────────────────────────────────────────────
 const glow = document.getElementById('cursorGlow');
 if (glow) {
   let mx = window.innerWidth / 2, my = window.innerHeight / 2;
   let cx = mx, cy = my;
+  let ticking = false;
 
   document.addEventListener('mousemove', e => {
     mx = e.clientX;
     my = e.clientY;
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        cx += (mx - cx) * 0.08;
+        cy += (my - cy) * 0.08;
+        glow.style.left = cx + 'px';
+        glow.style.top = cy + 'px';
+        ticking = false;
+      });
+      ticking = true;
+    }
   });
-
-  function animateGlow() {
-    cx += (mx - cx) * 0.08;
-    cy += (my - cy) * 0.08;
-    glow.style.left = cx + 'px';
-    glow.style.top = cy + 'px';
-    requestAnimationFrame(animateGlow);
-  }
-  animateGlow();
 }
+
+// ── Magnetic button ─────────────────────────────────────────────────
+document.querySelectorAll('.btn-primary').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const dist = Math.sqrt(x * x + y * y);
+    const maxDist = 150;
+    const strength = Math.min(1, (maxDist - Math.min(dist, maxDist)) / maxDist);
+    const pullX = x * 0.12 * strength;
+    const pullY = y * 0.12 * strength;
+    btn.style.setProperty('--mx', `${(e.clientX - rect.left) / rect.width * 100}%`);
+    btn.style.setProperty('--my', `${(e.clientY - rect.top) / rect.height * 100}%`);
+    btn.style.transform =
+      `translate(${pullX}px, ${pullY}px) translateY(-3px) scale(1.03)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+  });
+});
 
 // ── Nav scroll effect ───────────────────────────────────────────────
 const nav = document.querySelector('.nav');
-let lastScroll = 0;
 window.addEventListener('scroll', () => {
-  const y = window.scrollY;
-  if (y > 50) nav.classList.add('scrolled');
+  if (window.scrollY > 50) nav.classList.add('scrolled');
   else nav.classList.remove('scrolled');
-  lastScroll = y;
 }, { passive: true });
 
 // ── 3D Tilt on feature cards ────────────────────────────────────────
 document.querySelectorAll('.feature-card').forEach(card => {
+  let isHovering = false;
+  card.addEventListener('mouseenter', () => { isHovering = true; });
   card.addEventListener('mousemove', e => {
+    if (!isHovering) return;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -55,9 +86,25 @@ document.querySelectorAll('.feature-card').forEach(card => {
       `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale(1.015)`;
   });
   card.addEventListener('mouseleave', () => {
+    isHovering = false;
     card.style.transform = '';
   });
 });
+
+// ── Hero parallax orbs ──────────────────────────────────────────────
+const orbs = document.querySelectorAll('.hero-orb');
+window.addEventListener('scroll', () => {
+  const sy = window.scrollY;
+  const max = 300;
+  const pct = Math.min(1, sy / max);
+  orbs.forEach((orb, i) => {
+    const dir = i === 0 ? -1 : i === 1 ? 1 : -0.5;
+    const yOff = pct * 80 * dir;
+    orb.style.transform = orb.style.transform.replace(/translateY\([^)]+\)/, '') || orb.style.transform;
+    // We'll let the CSS animation handle transforms, add a subtle extra scroll offset
+    orb.style.marginTop = `${yOff}px`;
+  });
+}, { passive: true });
 
 // ── Particle canvas ─────────────────────────────────────────────────
 (function createParticles() {
@@ -76,7 +123,7 @@ document.querySelectorAll('.feature-card').forEach(card => {
   resize();
   window.addEventListener('resize', resize);
 
-  const count = Math.min(60, Math.floor((canvas.width * canvas.height) / 20000));
+  const count = Math.min(50, Math.floor((canvas.width * canvas.height) / 20000));
 
   for (let i = 0; i < count; i++) {
     particles.push({
@@ -95,7 +142,6 @@ document.querySelectorAll('.feature-card').forEach(card => {
     particles.forEach(p => {
       p.x += p.speedX;
       p.y += p.speedY;
-
       if (p.x < 0) p.x = canvas.width;
       if (p.x > canvas.width) p.x = 0;
       if (p.y < 0) p.y = canvas.height;
@@ -107,7 +153,6 @@ document.querySelectorAll('.feature-card').forEach(card => {
       ctx.fill();
     });
 
-    // Connections
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
@@ -123,10 +168,27 @@ document.querySelectorAll('.feature-card').forEach(card => {
         }
       }
     }
-
     animId = requestAnimationFrame(draw);
   }
   draw();
+})();
+
+// ── Entry animation on load ─────────────────────────────────────────
+(function entryAnim() {
+  const els = [
+    ...document.querySelectorAll('.hero-badge, .hero h1, .hero p, .hero-cta, .hero-features-mini, .voice-ui'),
+  ];
+  els.forEach((el, i) => {
+    el.classList.add('entry-hidden');
+    el.style.transition =
+      `opacity 0.7s ease ${i * 0.1}s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s`;
+  });
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      els.forEach(el => el.classList.add('entry-visible'));
+    });
+  });
 })();
 
 // ── Scroll reveal ───────────────────────────────────────────────────
@@ -142,11 +204,11 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll('.feature-card').forEach((card, i) => {
   card.style.opacity = '0';
   card.style.transform = 'translateY(30px)';
-  card.style.transition = `opacity 0.7s ease ${i * 0.08}s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s`;
+  card.style.transition =
+    `opacity 0.7s ease ${i * 0.08}s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s`;
   observer.observe(card);
 });
 
-// Also reveal steps
 document.querySelectorAll('.step, .req-item').forEach((el, i) => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(20px)';
