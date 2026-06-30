@@ -12,10 +12,16 @@ document.querySelectorAll('[id^="downloadBtn"]').forEach(btn => {
 
 // ── Scroll progress bar ─────────────────────────────────────────────
 const progressBar = document.getElementById('progressBar');
+let ticking = false;
 window.addEventListener('scroll', () => {
-  const h = document.documentElement.scrollHeight - window.innerHeight;
-  const pct = window.scrollY / h;
-  progressBar.style.transform = `scaleX(${pct})`;
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.transform = `scaleX(${window.scrollY / h})`;
+      ticking = false;
+    });
+    ticking = true;
+  }
 }, { passive: true });
 
 // ── Cursor glow follower ────────────────────────────────────────────
@@ -23,21 +29,20 @@ const glow = document.getElementById('cursorGlow');
 if (glow) {
   let mx = window.innerWidth / 2, my = window.innerHeight / 2;
   let cx = mx, cy = my;
-  let ticking = false;
+  let animId = null;
+
+  function tickGlow() {
+    cx += (mx - cx) * 0.08;
+    cy += (my - cy) * 0.08;
+    glow.style.left = cx + 'px';
+    glow.style.top = cy + 'px';
+    animId = null;
+  }
 
   document.addEventListener('mousemove', e => {
     mx = e.clientX;
     my = e.clientY;
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        cx += (mx - cx) * 0.08;
-        cy += (my - cy) * 0.08;
-        glow.style.left = cx + 'px';
-        glow.style.top = cy + 'px';
-        ticking = false;
-      });
-      ticking = true;
-    }
+    if (!animId) animId = requestAnimationFrame(tickGlow);
   });
 }
 
@@ -50,12 +55,10 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     const dist = Math.sqrt(x * x + y * y);
     const maxDist = 150;
     const strength = Math.min(1, (maxDist - Math.min(dist, maxDist)) / maxDist);
-    const pullX = x * 0.12 * strength;
-    const pullY = y * 0.12 * strength;
     btn.style.setProperty('--mx', `${(e.clientX - rect.left) / rect.width * 100}%`);
     btn.style.setProperty('--my', `${(e.clientY - rect.top) / rect.height * 100}%`);
     btn.style.transform =
-      `translate(${pullX}px, ${pullY}px) translateY(-3px) scale(1.03)`;
+      `translate(${x * 0.12 * strength}px, ${y * 0.12 * strength}px) translateY(-3px) scale(1.03)`;
   });
   btn.addEventListener('mouseleave', () => {
     btn.style.transform = '';
@@ -80,10 +83,8 @@ document.querySelectorAll('.feature-card').forEach(card => {
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -6;
-    const rotateY = ((x - centerX) / centerX) * 6;
     card.style.transform =
-      `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale(1.015)`;
+      `perspective(800px) rotateX(${((y - centerY) / centerY) * -6}deg) rotateY(${((x - centerX) / centerX) * 6}deg) translateY(-8px) scale(1.015)`;
   });
   card.addEventListener('mouseleave', () => {
     isHovering = false;
@@ -98,10 +99,9 @@ window.addEventListener('scroll', () => {
   const max = 300;
   const pct = Math.min(1, sy / max);
   orbs.forEach((orb, i) => {
-    const dir = i === 0 ? -1 : i === 1 ? 1 : -0.5;
-    const yOff = pct * 80 * dir;
-    orb.style.transform = orb.style.transform.replace(/translateY\([^)]+\)/, '') || orb.style.transform;
-    // We'll let the CSS animation handle transforms, add a subtle extra scroll offset
+    const dir = i === 0 ? -1 : 1;
+    const yOff = pct * 60 * dir;
+    // Use marginTop to avoid overwriting CSS animation transform
     orb.style.marginTop = `${yOff}px`;
   });
 }, { passive: true });
@@ -113,7 +113,7 @@ window.addEventListener('scroll', () => {
   document.body.prepend(canvas);
 
   const ctx = canvas.getContext('2d');
-  let particles = [];
+  const particles = [];
   let animId;
 
   function resize() {
@@ -123,23 +123,24 @@ window.addEventListener('scroll', () => {
   resize();
   window.addEventListener('resize', resize);
 
-  const count = Math.min(50, Math.floor((canvas.width * canvas.height) / 20000));
+  const count = Math.min(40, Math.floor((canvas.width * canvas.height) / 25000));
 
   for (let i = 0; i < count; i++) {
     particles.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      size: Math.random() * 2 + 0.4,
-      speedX: (Math.random() - 0.5) * 0.3,
-      speedY: (Math.random() - 0.5) * 0.3,
-      opacity: Math.random() * 0.3 + 0.05,
+      size: Math.random() * 2 + 0.3,
+      speedX: (Math.random() - 0.5) * 0.25,
+      speedY: (Math.random() - 0.5) * 0.25,
+      opacity: Math.random() * 0.25 + 0.04,
     });
   }
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    particles.forEach(p => {
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
       p.x += p.speedX;
       p.y += p.speedY;
       if (p.x < 0) p.x = canvas.width;
@@ -151,18 +152,21 @@ window.addEventListener('scroll', () => {
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(167, 139, 250, ${p.opacity})`;
       ctx.fill();
-    });
+    }
 
+    // Draw connections — only check particles within 100px
+    const maxDist = 100;
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
+        const distSq = dx * dx + dy * dy;
+        if (distSq < maxDist * maxDist) {
+          const dist = Math.sqrt(distSq);
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(167, 139, 250, ${0.05 * (1 - dist / 120)})`;
+          ctx.strokeStyle = `rgba(167, 139, 250, ${0.04 * (1 - dist / maxDist)})`;
           ctx.lineWidth = 0.5;
           ctx.stroke();
         }
@@ -175,9 +179,9 @@ window.addEventListener('scroll', () => {
 
 // ── Entry animation on load ─────────────────────────────────────────
 (function entryAnim() {
-  const els = [
-    ...document.querySelectorAll('.hero-badge, .hero h1, .hero p, .hero-cta, .hero-features-mini, .voice-ui'),
-  ];
+  const els = document.querySelectorAll(
+    '.hero-badge, .hero h1, .hero p, .hero-cta, .hero-features-mini, .voice-ui'
+  );
   els.forEach((el, i) => {
     el.classList.add('entry-hidden');
     el.style.transition =
@@ -186,7 +190,7 @@ window.addEventListener('scroll', () => {
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      els.forEach(el => el.classList.add('entry-visible'));
+      els.forEach(el => el.classList.remove('entry-hidden'));
     });
   });
 })();
