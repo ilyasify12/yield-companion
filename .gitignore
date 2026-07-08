@@ -1,3 +1,10 @@
 node_modules/
-.env
+dist/
+server-dist/
 *.exe
+.env
+release/
+desktop/dist/
+desktop/node_modules/
+*.log
+.DS_Store
