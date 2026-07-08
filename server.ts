@@ -35,18 +35,31 @@ app.get("/api/health", (req, res) => {
 
 // ── App version endpoint ──────────────────────────────────────────
 import { readFileSync, existsSync } from "fs";
+import { fileURLToPath } from "url";
 const APP_VERSION = (() => {
   try {
-    // Try multiple locations for package.json
-    const candidates = [
-      new URL("../package.json", import.meta.url),    // dev: server.ts is in src/
-      new URL("./package.json", import.meta.url),      // bundled: server.cjs in server-dist/
-      new URL("../../package.json", import.meta.url),   // nested in app.asar.unpacked
-    ];
-    for (const url of candidates) {
-      const filePath = url.pathname.replace(/^\/([A-Z]:)/, "$1"); // fix Windows path
-      if (existsSync(filePath)) {
-        const pkg = JSON.parse(readFileSync(filePath, "utf-8"));
+    const candidates: string[] = [];
+
+    // CJS (bundled to server-dist/server.cjs): __dirname is server-dist/
+    if (typeof __dirname !== "undefined") {
+      candidates.push(path.join(__dirname, "..", "package.json"));        // server-dist/../package.json
+      candidates.push(path.join(__dirname, "package.json"));              // server-dist/package.json
+      candidates.push(path.join(__dirname, "..", "..", "package.json"));  // nested in asar.unpacked
+    }
+
+    // ESM (dev via tsx): import.meta.url
+    if (typeof import.meta !== "undefined" && import.meta?.url) {
+      candidates.push(fileURLToPath(new URL("../package.json", import.meta.url)));
+      candidates.push(fileURLToPath(new URL("./package.json", import.meta.url)));
+      candidates.push(fileURLToPath(new URL("../../package.json", import.meta.url)));
+    }
+
+    // Fallback: cwd
+    candidates.push(path.join(process.cwd(), "package.json"));
+
+    for (const p of candidates) {
+      if (existsSync(p)) {
+        const pkg = JSON.parse(readFileSync(p, "utf-8"));
         if (pkg.version) return pkg.version;
       }
     }
