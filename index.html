@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YIELD COMPANION — AI Voice Assistant for Windows</title>
+  <meta name="description" content="Download YIELD COMPANION — the AI voice assistant that controls your Windows PC. Wake-word activated, runs locally, free." />
+  <meta property="og:title" content="YIELD COMPANION" />
+  <meta property="og:description" content="AI voice assistant for your Windows desktop." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="noise"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main">
+    <div class="nav-inner container">
+      <span class="nav-logo">✦ YIELD COMPANION</span>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#download" class="btn btn-sm">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-orb hero-orb--1"></div>
+      <div class="hero-orb hero-orb--2"></div>
+    </div>
+    <div class="container hero-inner">
+      <div class="hero-left">
+        <div class="hero-badge">v1.0.0 — Windows</div>
+        <h1>
+          Your voice controls<br />
+          <span class="gradient">everything</span>
+        </h1>
+        <p class="hero-sub">
+          YIELD COMPANION is an AI assistant that lives on your Windows PC.
+          Wake it with a word, ask it anything — it opens apps, searches files,
+          controls media, and answers questions. Hands-free.
+        </p>
+        <div class="hero-cta">
+          <a href="https://github.com/ilyasify12/yield-companion/releases/download/v1.0.0/YIELD-COMPANION-Setup-1.0.0.exe" class="btn btn-lg btn-primary" id="downloadBtn">
+            <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Download for Windows</span>
+          </a>
+          <span class="hero-meta">Installer · 119 MB</span>
+        </div>
+        <div class="hero-features-mini">
+          <span>Wake word</span>
+          <span>Desktop control</span>
+          <span>Local-first</span>
+          <span>Free</span>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="voice-ui">
+          <div class="voice-ui-status">
+            <span class="voice-ui-dot"></span>
+            <span class="voice-ui-label">Listening for "Mia"</span>
+          </div>
+          <div class="voice-wave" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="voice-transcript">
+            <div class="voice-line voice-line--you">
+              <span class="voice-line-label">You</span>
+              <span class="voice-line-text">Open Spotify, play my focus playlist</span>
+            </div>
+            <div class="voice-line voice-line--ai">
+              <span class="voice-line-label">AI</span>
+              <span class="voice-line-text">Opening Spotify &amp; starting your focus playlist.</span>
+            </div>
+            <div class="voice-line voice-line--you">
+              <span class="voice-line-label">You</span>
+              <span class="voice-line-text">What's the weather this weekend?</span>
+            </div>
+            <div class="voice-line voice-line--ai">
+              <span class="voice-line-label">AI</span>
+              <span class="voice-line-text">Sunny, 24&deg;C Saturday, light rain Sunday.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="divider" aria-hidden="true"><span></span></div>
+
+  <!-- Features -->
+  <section id="features" class="section">
+    <div class="container">
+      <h2 class="section-title">Why you'll love it</h2>
+      <p class="section-sub">Everything runs locally. Your voice never leaves your machine.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-card-border"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </div>
+            <h3>Voice AI</h3>
+            <p>Natural conversations with a powerful AI model. Ask questions, get answers, dictate — all hands-free.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-border"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h3>Desktop Control</h3>
+            <p>Open applications, manage windows, play music, search files — your voice becomes your mouse and keyboard.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-border"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+            </div>
+            <h3>Wake Word</h3>
+            <p>Say "Mia" or "James" and it's ready. No buttons, no hotkeys — it listens when you need it, ignores when you don't.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-border"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3>Local & Private</h3>
+            <p>Your data stays on your machine. No cloud uploads, no accounts, no tracking. Privacy isn't an afterthought.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-border"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <h3>Screen Context</h3>
+            <p>Optionally share your screen for smarter, context-aware help. You stay in control — it only looks when you say so.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-border"></div>
+          <div class="feature-card-inner">
+            <div class="feature-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <h3>Lightweight</h3>
+            <p>Sits quietly in your system tray with minimal resource usage. Always ready, never in the way.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="divider" aria-hidden="true"><span></span></div>
+
+  <!-- How it works -->
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <h2 class="section-title">How it works</h2>
+      <p class="section-sub">Get started in under a minute.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Download &amp; Install</h3>
+          <p>A clean installer, under 120 MB. No adware, no toolbars.</p>
+        </div>
+        <div class="step-connector" aria-hidden="true">
+          <div class="step-connector-line"></div>
+          <div class="step-connector-dot"></div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Launch &amp; Configure</h3>
+          <p>Open the app, say your wake word once. No sign-up, no account.</p>
+        </div>
+        <div class="step-connector" aria-hidden="true">
+          <div class="step-connector-line"></div>
+          <div class="step-connector-dot"></div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Talk to your PC</h3>
+          <p>Say the wake word anytime. Open apps, search files, ask anything.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="divider" aria-hidden="true"><span></span></div>
+
+  <!-- System Requirements -->
+  <section id="requirements" class="section">
+    <div class="container">
+      <h2 class="section-title">System Requirements</h2>
+      <p class="section-sub">Windows only, for now.</p>
+      <div class="req-grid">
+        <div class="req-item">
+          <span class="req-label">OS</span>
+          <span class="req-value">Windows 10 / 11 (64-bit)</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Processor</span>
+          <span class="req-value">Intel Core i3 / AMD Ryzen 3+</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Memory</span>
+          <span class="req-value">4 GB RAM minimum</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Storage</span>
+          <span class="req-value">500 MB available</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Microphone</span>
+          <span class="req-value">Required for voice interaction</span>
+        </div>
+        <div class="req-item">
+          <span class="req-label">Internet</span>
+          <span class="req-value">Required for AI queries</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="divider" aria-hidden="true"><span></span></div>
+
+  <!-- Download CTA -->
+  <section id="download" class="section section-cta">
+    <div class="container">
+      <h2 class="section-title">Get started</h2>
+      <p class="section-sub">Download and be up and running in minutes.</p>
+      <a href="https://github.com/ilyasify12/yield-companion/releases/download/v1.0.0/YIELD-COMPANION-Setup-1.0.0.exe" class="btn btn-lg btn-primary" id="downloadBtn2">
+        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Download YIELD COMPANION</span>
+      </a>
+      <p class="hero-meta" style="margin-top: 0.75rem;">v1.0.0 · Windows · 119 MB · Free</p>
+      <p class="version-info">See <a href="https://github.com/ilyasify12/yield-companion/releases" target="_blank">releases</a> for changelog and older versions.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>&copy; <span id="year"></span> YIELD</span>
+      <span class="footer-divider">&middot;</span>
+      <span>Built with Electron</span>
+      <span class="footer-divider">&middot;</span>
+      <span>MIT License</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
