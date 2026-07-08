@@ -16,6 +16,8 @@ import { NeonInput } from "./components/NeonInput";
 import { AssistantStatus } from "./components/AssistantStatus";
 import { MicButton } from "./components/MicButton";
 import { ToolExecutionToast, ToolLog } from "./components/ToolExecutionToast";
+import { ScreenCaptureDisplay, ScreenCapture } from "./components/ScreenCaptureDisplay";
+import { WindowUnderstanding } from "./components/WindowUnderstanding";
 import { useMusicSynth } from "./hooks/useMusicSynth";
 import { MusicPlayer } from "./components/MusicPlayer";
 import { ChatPanel } from "./components/ChatPanel";
@@ -66,9 +68,23 @@ export default function App() {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
 
+  // ── Screen capture display ─────────────────────────────────────
+  const [screenCaptures, setScreenCaptures] = useState<ScreenCapture[]>([]);
+  const capIdRef = useRef(0);
+
+  // ── Window understanding ────────────────────────────────────────
+  const [windowInfo, setWindowInfo] = useState<any>(null);
+  const [clipboardContent, setClipboardContent] = useState<string | null>(null);
+  const [cursorPosition, setCursorPosition] = useState<{ x: number; y: number } | null>(null);
+
+  // ── Keyboard shortcuts ──────────────────────────────────────────
+  const altPressedRef = useRef<number>(0); // track double-alt
+
   // ── Update state ────────────────────────────────────────────────
   const [updateInfo, setUpdateInfo] = useState<any>(null);
   const [updateDismissed, setUpdateDismissed] = useState(false);
+  const [updateCheckState, setUpdateCheckState] = useState<"idle" | "checking" | "done">("idle");
+  const [lastUpdateCheck, setLastUpdateCheck] = useState<string | null>(null);
 
   // ── PIN lock state ──────────────────────────────────────────────
   const [isLocked, setIsLocked] = useState(true);
@@ -162,24 +178,51 @@ export default function App() {
   // ── Update checking ─────────────────────────────────────────────
   // Check for updates on app start and periodically
   const checkForUpdates = useCallback(async () => {
+    setUpdateCheckState("checking");
     try {
       const response = await fetch("/api/check-update");
       const info = await response.json();
-      setUpdateInfo(info);
+      // If API returned an error, surface it
+      if (info.error) {
+        setUpdateInfo({ ...info, updateAvailable: false, checkFailed: true });
+      } else {
+        setUpdateInfo(info);
+      }
+      setLastUpdateCheck(new Date().toLocaleTimeString());
+      setUpdateCheckState("done");
       return info;
     } catch {
-      if (window.electronAPI?.checkForUpdate) {
-        const info = await window.electronAPI.checkForUpdate();
-        setUpdateInfo(info);
-        return info;
+      try {
+        if (window.electronAPI?.checkForUpdate) {
+          const info = await window.electronAPI.checkForUpdate();
+          if (info.error) {
+            setUpdateInfo({ ...info, updateAvailable: false, checkFailed: true });
+          } else {
+            setUpdateInfo(info);
+          }
+          setLastUpdateCheck(new Date().toLocaleTimeString());
+          setUpdateCheckState("done");
+          return info;
+        }
+      } catch {
+        // Both methods failed
       }
+      // Both methods failed — show error state
+      setUpdateInfo({
+        updateAvailable: false,
+        checkFailed: true,
+        error: "Could not reach update server",
+      });
+      setUpdateCheckState("done");
     }
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => checkForUpdates(), 5000);
+    if (!settings.autoUpdateCheck) return;
+    // Wait for everything to settle, then check for updates
+    const timer = setTimeout(() => checkForUpdates(), 8000);
     return () => clearTimeout(timer);
-  }, [checkForUpdates]);
+  }, [checkForUpdates, settings.autoUpdateCheck]);
 
   // Notify on update found
   useEffect(() => {
@@ -366,6 +409,54 @@ export default function App() {
     }
   }, [lastEvent, settings.wakeWordEnabled, sessionState]);
 
+  // ── Continuous listening ─────────────────────────────────────────
+  // When enabled, keep the session alive so the mic stays hot.
+  // The wake word reactivates the session automatically.
+  useEffect(() => {
+    if (settings.continuousListening && sessionState === "disconnected") {
+      // Auto-reconnect if disconnected in continuous listening mode
+      const timer = setTimeout(() => connectSessionRef.current(), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [settings.continuousListening, sessionState]);
+
+  // ── Keyboard shortcuts ───────────────────────────────────────────
+  const toggleConnectionRef = useRef(toggleConnection);
+  toggleConnectionRef.current = toggleConnection;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Space — toggle connection
+      if (e.ctrlKey && e.code === "Space") {
+        e.preventDefault();
+        toggleConnectionRef.current();
+        return;
+      }
+
+      // Double Alt — toggle settings
+      if (e.key === "Alt" && !e.ctrlKey && !e.metaKey) {
+        const now = Date.now();
+        if (now - altPressedRef.current < 400) {
+          // Double alt detected!
+          e.preventDefault();
+          setIsSettingsOpen((o) => !o);
+          altPressedRef.current = 0;
+          return;
+        }
+        altPressedRef.current = now;
+      }
+
+      // Escape — close panels
+      if (e.key === "Escape") {
+        if (isMusicPlayerOpen) setIsMusicPlayerOpen(false);
+        else if (isChatPanelOpen) setIsChatPanelOpen(false);
+        else if (isSettingsOpen) setIsSettingsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMusicPlayerOpen, isChatPanelOpen, isSettingsOpen]);
+
   // Accumulate and handle user/companion live transcripts
   const handleTranscript = (role: "user" | "companion", text: string) => {
     setChatMessages((prev) => {
@@ -511,8 +602,17 @@ export default function App() {
             : l
         )
       );
-      // If the tool returned media (e.g. screenshot), inject it into the AI session.
+      // If the tool returned media (e.g. screenshot), inject it into the AI session
+      // AND show it in the ScreenCaptureDisplay.
       if (result?.media) {
+        const cap: ScreenCapture = {
+          id: `cap-${capIdRef.current++}`,
+          data: result.media.base64,
+          mimeType: result.media.mimeType,
+          description: result.media.description || `Captured via ${name}`,
+          timestamp: new Date(),
+        };
+        setScreenCaptures((prev) => [cap, ...prev.slice(0, 2)]);
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
           socketRef.current.send(
             JSON.stringify({
@@ -521,6 +621,21 @@ export default function App() {
               mimeType: result.media.mimeType,
             })
           );
+        }
+      }
+
+      // Track window context when capture tools are used
+      if (name === "captureActiveWindow" || name === "captureScreen") {
+        setWindowInfo({
+          title: result?.output?.windowTitle || "Desktop",
+          process: result?.output?.process || "explorer.exe",
+          appName: result?.output?.appName || "Windows Explorer",
+        });
+        if (result?.output?.clipboard) {
+          setClipboardContent(result.output.clipboard);
+        }
+        if (result?.output?.cursorPos) {
+          setCursorPosition(result.output.cursorPos);
         }
       }
       if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -640,6 +755,10 @@ export default function App() {
 
   const removeToolLog = (id: string) => {
     setToolLogs((prev) => prev.filter((l) => l.id !== id));
+  };
+
+  const removeScreenCapture = (id: string) => {
+    setScreenCaptures((prev) => prev.filter((c) => c.id !== id));
   };
 
   const isActive = sessionState !== "disconnected" && sessionState !== "error";
@@ -958,10 +1077,27 @@ export default function App() {
         updateInfo={updateInfo}
         onDismiss={() => setUpdateDismissed(true)}
         onCheckNow={() => checkForUpdates()}
+        checkState={updateCheckState}
+        lastCheck={lastUpdateCheck}
       />
 
       {/* Floating Action Notifications */}
       <ToolExecutionToast logs={toolLogs} onRemove={removeToolLog} />
+
+      {/* Screen Capture Display */}
+      <ScreenCaptureDisplay captures={screenCaptures} onRemove={removeScreenCapture} />
+
+      {/* Window Understanding (context panel) */}
+      {settings.showContextPanel && (
+        <WindowUnderstanding
+          windowInfo={windowInfo}
+          clipboard={clipboardContent}
+          cursorPos={cursorPosition}
+          onDismiss={() => {
+            // Just clear, next capture will re-show
+          }}
+        />
+      )}
 
       {/* Music Player */}
       <AnimatePresence>
@@ -1088,7 +1224,7 @@ export default function App() {
         </div>
         <div className="flex items-center gap-3">
           {desktopAvailable && <span className="text-emerald-500/60">DSK ●</span>}
-          <span>v1.0</span>
+          <span>v1.2</span>
         </div>
       </div>
 

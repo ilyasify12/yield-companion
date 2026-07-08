@@ -131,7 +131,7 @@ export function SettingsPanel({
             </div>
           </div>
 
-          <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-2">
             <div>
               <span className="text-xs text-gray-200">Enable Wake Word</span>
               <p className="text-[9px] font-mono text-gray-500 mt-0.5">
@@ -150,6 +150,33 @@ export function SettingsPanel({
             >
               <motion.div
                 animate={{ x: settings.wakeWordEnabled ? 20 : 3 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="w-4.5 h-4.5 bg-white rounded-full shadow-md"
+                style={{ width: "18px", height: "18px", marginTop: "3px" }}
+              />
+            </button>
+          </div>
+
+          {/* Continuous Listening toggle */}
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+            <div>
+              <span className="text-xs text-gray-200">Continuous Listening</span>
+              <p className="text-[9px] font-mono text-gray-500 mt-0.5">
+                Keep mic hot — talk freely after wake word activates
+              </p>
+            </div>
+            <button
+              onClick={() => updateSetting("continuousListening", !settings.continuousListening)}
+              className={`relative w-11 h-6 rounded-full transition-all duration-300 cursor-pointer shrink-0 ${
+                settings.continuousListening
+                  ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)]"
+                  : "bg-white/[0.08]"
+              }`}
+              role="switch"
+              aria-checked={settings.continuousListening}
+            >
+              <motion.div
+                animate={{ x: settings.continuousListening ? 20 : 3 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 className="w-4.5 h-4.5 bg-white rounded-full shadow-md"
                 style={{ width: "18px", height: "18px", marginTop: "3px" }}
@@ -309,6 +336,35 @@ export function SettingsPanel({
           </div>
 
           {/* Restart / Retry button */}
+          {/* Show Context Panel toggle */}
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-200">Screen Context Panel</span>
+              </div>
+              <p className="text-[9px] font-mono text-gray-500 mt-0.5">
+                Show window, clipboard & cursor info when AI examines context
+              </p>
+            </div>
+            <button
+              onClick={() => updateSetting("showContextPanel", !settings.showContextPanel)}
+              className={`relative w-11 h-6 rounded-full transition-all duration-300 cursor-pointer shrink-0 ${
+                settings.showContextPanel
+                  ? "bg-cyan-500 shadow-[0_0_12px_rgba(6,182,212,0.3)]"
+                  : "bg-white/[0.08]"
+              }`}
+              role="switch"
+              aria-checked={settings.showContextPanel}
+            >
+              <motion.div
+                animate={{ x: settings.showContextPanel ? 20 : 3 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="w-4.5 h-4.5 bg-white rounded-full shadow-md"
+                style={{ width: "18px", height: "18px", marginTop: "3px" }}
+              />
+            </button>
+          </div>
+
           {restartError && (
             <div className="mt-2 px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-[10px] font-mono text-rose-300">
               {restartError}
@@ -530,7 +586,7 @@ export function SettingsPanel({
           <div className="px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-[11px] text-gray-400">Version</span>
-              <span className="text-[11px] font-mono text-gray-200">1.0.0</span>
+              <span className="text-[11px] font-mono text-gray-200">1.2.0</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[11px] text-gray-400">Model</span>

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ExternalLink, Search, Clock, Clipboard, Sparkles,
@@ -26,6 +27,26 @@ interface ToolExecutionToastProps {
 }
 
 export function ToolExecutionToast({ logs, onRemove }: ToolExecutionToastProps) {
+  // ── Auto-dismiss completed/failed logs after 3 seconds ─────────────
+  const dismissTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  useEffect(() => {
+    const timers = dismissTimersRef.current;
+    for (const log of logs) {
+      if ((log.status === "completed" || log.status === "failed") && !timers.has(log.id)) {
+        const timer = setTimeout(() => {
+          onRemove(log.id);
+          timers.delete(log.id);
+        }, 3000);
+        timers.set(log.id, timer);
+      }
+    }
+    return () => {
+      for (const timer of timers.values()) clearTimeout(timer);
+      timers.clear();
+    };
+  }, [logs, onRemove]);
+
   const getToolIcon = (name: string) => {
     switch (name) {
       case "openWebsite":

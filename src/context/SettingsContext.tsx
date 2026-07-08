@@ -22,6 +22,10 @@ export interface AppSettings {
   soundEffectsEnabled: boolean;
   /** Enable periodic update checking. */
   autoUpdateCheck: boolean;
+  /** Continuous listening — session stays active, mic always hot. */
+  continuousListening: boolean;
+  /** Show screen understanding context panel. */
+  showContextPanel: boolean;
 }
 
 const DEFAULTS: AppSettings = {
@@ -33,6 +37,8 @@ const DEFAULTS: AppSettings = {
   autoLockMinutes: 0,
   soundEffectsEnabled: false,
   autoUpdateCheck: true,
+  continuousListening: false,
+  showContextPanel: true,
 };
 
 const STORAGE_KEY = "aura-settings";

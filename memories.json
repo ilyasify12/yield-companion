@@ -1,0 +1,38 @@
+[
+  {
+    "memory_id": "mem_hoce0vrbt",
+    "category": "identity",
+    "content": "User's preferred name is Ilyasify",
+    "confidence": 1,
+    "importance": 0.9,
+    "created_at": "2026-06-27T18:40:37.272Z",
+    "updated_at": "2026-06-27T18:40:37.272Z",
+    "last_used": "2026-06-27T18:40:37.272Z",
+    "companion_id": "both",
+    "type": "long-term"
+  },
+  {
+    "memory_id": "mem_00ehvzrke",
+    "category": "technology",
+    "content": "User's Windows taskbar is set to auto-hide, which affects coordinate accuracy.",
+    "confidence": 1,
+    "importance": 0.8,
+    "created_at": "2026-06-28T04:56:47.576Z",
+    "updated_at": "2026-06-28T04:56:47.576Z",
+    "last_used": "2026-06-28T04:56:47.576Z",
+    "companion_id": "both",
+    "type": "long-term"
+  },
+  {
+    "memory_id": "mem_v6hh8ya6s",
+    "category": "gaming",
+    "content": "User plays Rocket League.",
+    "confidence": 0.95,
+    "importance": 0.7,
+    "created_at": "2026-06-28T05:19:20.902Z",
+    "updated_at": "2026-06-28T05:19:20.902Z",
+    "last_used": "2026-06-28T05:19:20.902Z",
+    "companion_id": "both",
+    "type": "long-term"
+  }
+]

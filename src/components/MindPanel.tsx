@@ -82,9 +82,26 @@ export function MindPanel() {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-scroll
+  // Auto-scroll — only if user is already at the bottom
+  const isNearBottomRef = useRef(true);
+  const handleScroll = useRef(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const threshold = 30; // px from bottom counts as "at bottom"
+    isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+  });
+
+  // Bind scroll listener once
   useEffect(() => {
-    if (listRef.current) {
+    const el = listRef.current;
+    if (!el) return;
+    const onScroll = () => handleScroll.current();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (listRef.current && isNearBottomRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [thoughts]);

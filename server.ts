@@ -34,13 +34,25 @@ app.get("/api/health", (req, res) => {
 });
 
 // ── App version endpoint ──────────────────────────────────────────
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 const APP_VERSION = (() => {
   try {
-    const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8"));
-    return pkg.version || "1.0.0";
+    // Try multiple locations for package.json
+    const candidates = [
+      new URL("../package.json", import.meta.url),    // dev: server.ts is in src/
+      new URL("./package.json", import.meta.url),      // bundled: server.cjs in server-dist/
+      new URL("../../package.json", import.meta.url),   // nested in app.asar.unpacked
+    ];
+    for (const url of candidates) {
+      const filePath = url.pathname.replace(/^\/([A-Z]:)/, "$1"); // fix Windows path
+      if (existsSync(filePath)) {
+        const pkg = JSON.parse(readFileSync(filePath, "utf-8"));
+        if (pkg.version) return pkg.version;
+      }
+    }
+    return "1.2.0";
   } catch {
-    return "1.0.0";
+    return "1.2.0";
   }
 })();
 

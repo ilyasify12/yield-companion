@@ -1,0 +1,6 @@
+{
+  "name": "Real-Time Voice Assistant",
+  "description": "A high-performance real-time voice-to-voice AI companion powered by the Gemini Live API with modular tool execution and beautiful audio visualizers.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
