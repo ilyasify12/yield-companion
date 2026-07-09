@@ -96,6 +96,8 @@ function savePlugins(plugins: PluginInstance[]) {
 }
 
 /** Check if a plugin should be auto-built during install. */
+let _builtinsInitialized = false;
+
 function detectBuiltinPlugins(): PluginInstance[] {
   const DEFAULT_PLUGINS: PluginManifest[] = [
     {
@@ -145,32 +147,39 @@ function detectBuiltinPlugins(): PluginInstance[] {
   ];
 
   const existing = loadPlugins();
-  const existingIds = new Set(existing.map((p) => p.manifest.id));
 
-  for (const builtin of DEFAULT_PLUGINS) {
-    if (!existingIds.has(builtin.id)) {
-      existing.push({
-        manifest: builtin,
-        enabled: true,
-        loaded: true,
-        config: {},
-      });
+  // Only seed builtins once — prevents duplication on re-render / StrictMode
+  if (!_builtinsInitialized) {
+    _builtinsInitialized = true;
+
+    const existingIds = new Set(existing.map((p) => p.manifest.id));
+
+    for (const builtin of DEFAULT_PLUGINS) {
+      if (!existingIds.has(builtin.id)) {
+        existing.push({
+          manifest: builtin,
+          enabled: true,
+          loaded: true,
+          config: {},
+        });
+      }
     }
-  }
 
-  // Merge config defaults for existing plugins that might be missing config keys
-  for (const p of existing) {
-    const builtin = DEFAULT_PLUGINS.find((b) => b.id === p.manifest.id);
-    if (builtin?.config) {
-      for (const [key, field] of Object.entries(builtin.config)) {
-        if (p.config[key] === undefined && field.default !== undefined) {
-          p.config[key] = field.default;
+    // Merge config defaults for existing plugins that might be missing config keys
+    for (const p of existing) {
+      const builtin = DEFAULT_PLUGINS.find((b) => b.id === p.manifest.id);
+      if (builtin?.config) {
+        for (const [key, field] of Object.entries(builtin.config)) {
+          if (p.config[key] === undefined && field.default !== undefined) {
+            p.config[key] = field.default;
+          }
         }
       }
     }
+
+    savePlugins(existing);
   }
 
-  savePlugins(existing);
   return existing;
 }
 

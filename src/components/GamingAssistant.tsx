@@ -56,7 +56,7 @@ export function GamingAssistant({ isOpen, onClose }: GamingAssistantProps) {
           const knownGames = [
             "steam", "epic", "ubisoft", "battle.net",
             "minecraft", "cyberpunk", "fortnite", "valorant",
-            "league", "dota", "csgo", "counter-strike", "overwatch",
+            "league", "dota", "csgo", "cs2", "counter-strike", "overwatch",
             "apex", "destiny", "call of duty", "warzone",
             "gta", "red dead", "hollow knight", "skyrim",
             "fallout", "elden ring", "halo", "gears",
