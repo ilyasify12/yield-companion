@@ -63,9 +63,9 @@ const APP_VERSION = (() => {
         if (pkg.version) return pkg.version;
       }
     }
-    return "1.2.0";
+    return "1.2.1";
   } catch {
-    return "1.2.0";
+    return "1.2.1";
   }
 })();
 
