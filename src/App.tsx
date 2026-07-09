@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Settings, Sparkles, Music, MessageSquare } from "lucide-react";
+import { Settings, Sparkles, Music, MessageSquare, Gamepad2, Puzzle } from "lucide-react";
 import { CompanionConfig, CompanionId, SessionState, ChatMessage } from "./types";
 import { useAudioStreamer } from "./hooks/useAudioStreamer";
 import { useAudioPlayer } from "./hooks/useAudioPlayer";
@@ -28,6 +28,8 @@ import { useSettings } from "./context/SettingsContext";
 import { TitleBar } from "./components/TitleBar";
 import { PinLock } from "./components/PinLock";
 import { UpdateNotification } from "./components/UpdateNotification";
+import { GamingAssistant } from "./components/GamingAssistant";
+import { PluginSystem } from "./components/PluginSystem";
 
 // Definition of the two high-end AI companions
 const COMPANIONS: CompanionConfig[] = [
@@ -65,6 +67,8 @@ export default function App() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isChatPanelOpen, setIsChatPanelOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isGamingOpen, setIsGamingOpen] = useState(false);
+  const [isPluginOpen, setIsPluginOpen] = useState(false);
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
 
@@ -449,13 +453,15 @@ export default function App() {
       if (e.key === "Escape") {
         if (isMusicPlayerOpen) setIsMusicPlayerOpen(false);
         else if (isChatPanelOpen) setIsChatPanelOpen(false);
+        else if (isGamingOpen) setIsGamingOpen(false);
+        else if (isPluginOpen) setIsPluginOpen(false);
         else if (isSettingsOpen) setIsSettingsOpen(false);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isMusicPlayerOpen, isChatPanelOpen, isSettingsOpen]);
+  }, [isMusicPlayerOpen, isChatPanelOpen, isGamingOpen, isPluginOpen, isSettingsOpen]);
 
   // Accumulate and handle user/companion live transcripts
   const handleTranscript = (role: "user" | "companion", text: string) => {
@@ -891,6 +897,28 @@ export default function App() {
           >
             <Settings className="w-3.5 h-3.5" />
           </button>
+          <button
+            onClick={() => setIsGamingOpen(!isGamingOpen)}
+            className={`p-2 rounded-full border transition-all duration-300 cursor-pointer ${
+              isGamingOpen
+                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30 shadow-lg shadow-emerald-500/10"
+                : "bg-white/[0.03] text-gray-400 hover:text-white border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]"
+            }`}
+            title="Toggle Gaming Assistant"
+          >
+            <Gamepad2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => setIsPluginOpen(!isPluginOpen)}
+            className={`p-2 rounded-full border transition-all duration-300 cursor-pointer ${
+              isPluginOpen
+                ? "bg-[#7C5CFF]/15 text-[#A288FF] border-[#7C5CFF]/30 shadow-lg shadow-[#7C5CFF]/10"
+                : "bg-white/[0.03] text-gray-400 hover:text-white border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]"
+            }`}
+            title="Toggle Plugin System"
+          >
+            <Puzzle className="w-3.5 h-3.5" />
+          </button>
         </div>
       </header>
 
@@ -1140,6 +1168,18 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Gaming Assistant */}
+      <GamingAssistant
+        isOpen={isGamingOpen}
+        onClose={() => setIsGamingOpen(false)}
+      />
+
+      {/* Plugin System */}
+      <PluginSystem
+        isOpen={isPluginOpen}
+        onClose={() => setIsPluginOpen(false)}
+      />
+
       {/* Settings sliding panel */}
       <AnimatePresence>
         {isSettingsOpen && (
@@ -1224,7 +1264,7 @@ export default function App() {
         </div>
         <div className="flex items-center gap-3">
           {desktopAvailable && <span className="text-emerald-500/60">DSK ●</span>}
-          <span>v1.2</span>
+          <span>v1.2.1</span>
         </div>
       </div>
 

@@ -24,6 +24,7 @@ import { screenTools } from "./modules/screen.js";
 import { pcControlTools } from "./modules/pc-control.js";
 import { mediaControlTools } from "./modules/media-control.js";
 import { youtubeTools } from "./modules/youtube.js";
+import { vitalsTools } from "./modules/vitals.js";
 
 // --- wiring -----------------------------------------------------------------
 
@@ -43,6 +44,7 @@ const allModules: typeof fileTools = [
   ...pcControlTools,
   ...mediaControlTools,
   ...youtubeTools,
+  ...vitalsTools,
 ];
 
 for (const tool of allModules) {

@@ -1,7 +1,7 @@
 {
   "name": "yield-companion",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "YIELD COMPANION — Voice AI with Desktop PC Control",
   "author": "YIELD",
   "license": "MIT",
@@ -55,6 +55,7 @@
     "directories": {
       "output": "release"
     },
+    "npmRebuild": false,
     "files": [
       "dist/**/*",
       "server-dist/**/*",
@@ -105,7 +106,9 @@
       "createStartMenuShortcut": true,
       "shortcutName": "YIELD COMPANION",
       "uninstallDisplayName": "YIELD COMPANION",
-      "runAfterFinish": true
+      "runAfterFinish": true,
+      "differentialPackage": true,
+      "installerIcon": "assets/icon.png"
     }
   }
 }

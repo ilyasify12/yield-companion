@@ -10,7 +10,20 @@ import {
   Activity, Gauge, Zap, Clock, Monitor,
 } from "lucide-react";
 
-interface Vitals {
+interface VitalsData {
+  cpu: number;
+  cpuCores?: number;
+  memory: { used: number; total: number; percent: number };
+  disks: { mount: string; free: number; total: number; used: number; usage: number }[];
+  gpu: { usage: number; temp: number | null; memory: number | null };
+  battery: { level: number | null; charging: boolean | null };
+  uptime: string;
+  processes: number;
+  hostname?: string;
+  platform?: string;
+}
+
+interface VitalsState {
   cpu: number;
   cpuTemp: number | null;
   memory: number;
@@ -23,24 +36,17 @@ interface Vitals {
   batteryCharging: boolean | null;
   diskUsage: number;
   diskTotal: number;
+  drives: { mount: string; usage: number }[];
   networkRx: number;
   networkTx: number;
   processes: number;
   uptime: string;
   ping: number;
+  connected: boolean;
 }
 
-function formatUptime(seconds: number): string {
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const parts: string[] = [];
-  if (d) parts.push(`${d}d`);
-  if (h) parts.push(`${h}h`);
-  if (m) parts.push(`${m}m`);
-  parts.push(`${s}s`);
-  return parts.slice(0, 2).join(" ");
+function formatUptime(seconds: string): string {
+  return seconds;
 }
 
 function formatBytes(bytes: number): string {
@@ -98,11 +104,11 @@ function StatRow({ icon, label, value, subValue, bar }: StatRowProps) {
 }
 
 export function VitalsPanel() {
-  const [vitals, setVitals] = useState<Vitals>({
+  const [vitals, setVitals] = useState<VitalsState>({
     cpu: 0,
     cpuTemp: null,
     memory: 0,
-    memoryTotal: 8,
+    memoryTotal: 16,
     memoryPercent: 0,
     gpuUsage: 0,
     gpuTemp: null,
@@ -111,11 +117,13 @@ export function VitalsPanel() {
     batteryCharging: null,
     diskUsage: 0,
     diskTotal: 500,
+    network: [], // not used in template but kept for compat
     networkRx: 0,
     networkTx: 0,
     processes: 0,
     uptime: "0s",
     ping: 0,
+    connected: false,
   });
 
   const [history, setHistory] = useState<number[]>([]);
@@ -123,110 +131,73 @@ export function VitalsPanel() {
   const prevNetworkRef = useRef({ rx: 0, tx: 0, ts: Date.now() });
 
   useEffect(() => {
-    let memory: any;
-    try { memory = (performance as any).memory; } catch { /* no-op */ }
+    const fetchVitals = async () => {
+      try {
+        const response = await fetch("/api/vitals", { signal: AbortSignal.timeout(4000) });
+        if (!response.ok) return;
+        const data = await response.json();
 
-    // Battery API
-    let batteryManager: any = null;
-    if (navigator as any) {
-      const nav = navigator as any;
-      if (nav.getBattery) {
-        nav.getBattery().then((b: any) => {
-          batteryManager = b;
-          b.addEventListener("levelchange", () => {});
-          b.addEventListener("chargingchange", () => {});
-        }).catch(() => {});
-      }
-    }
+        if (data?.ok && data?.output) {
+          const o: VitalsData = data.output;
 
-    // Network API
-    const conn = (navigator as any).connection;
-    let prevRx = 0, prevTx = 0, prevTs = performance.now();
-    if ((performance as any).getEntriesByType) {
-      const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
-      if (resources.length > 0) {
-        prevRx = resources.reduce((s, r) => s + (r.transferSize || 0), 0);
-        prevTx = resources.reduce((s, r) => s + (r.encodedBodySize || 0), 0);
-      }
-    }
+          // Rolling history for sparkline
+          const h = historyRef.current;
+          h.push(o.cpu);
+          if (h.length > 30) h.shift();
+          historyRef.current = h;
+          setHistory([...h]);
 
-    const tick = () => {
-      const heapPercent = memory?.totalJSHeapSize
-        ? Math.min(100, Math.round((memory.usedJSHeapSize / memory.totalJSHeapSize) * 100))
-        : 0;
-      const memEstimate = memory
-        ? Math.round(memory.usedJSHeapSize / (1024 * 1024 * 1024) * 100) / 100
-        : Math.random() * 6 + 1; // Estimated RAM usage when API not available
-      const memTotal = memory
-        ? Math.round(memory.totalJSHeapSize / (1024 * 1024 * 1024) * 100) / 100
-        : 16; // 16GB assumed
-      const memPct = Math.min(100, Math.round((memEstimate / Math.max(memTotal, 1)) * 100));
+          // Network estimation (from performance API)
+          const now = performance.now();
+          let rxBytes = 0, txBytes = 0;
+          if ((performance as any).getEntriesByType) {
+            const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
+            if (resources.length > 0) {
+              rxBytes = resources.reduce((s, r) => s + (r.transferSize || 0), 0);
+              txBytes = resources.reduce((s, r) => s + (r.encodedBodySize || 0), 0);
+            }
+          }
+          const prev = prevNetworkRef.current;
+          const dt = (now - prev.ts) / 1000;
+          const rxSpeed = dt > 0.5 ? Math.max(0, (rxBytes - prev.rx) / dt) : 0;
+          const txSpeed = dt > 0.5 ? Math.max(0, (txBytes - prev.tx) / dt) : 0;
+          if (dt > 0.5) {
+            prev.rx = rxBytes; prev.tx = txBytes; prev.ts = now;
+          }
 
-      // CPU: use heap as proxy + small noise for realism
-      const cpu = Math.min(100, Math.round(heapPercent * 0.6 + Math.random() * 12 + 4));
+          const conn = (navigator as any).connection;
 
-      // GPU estimate: simulate based on load
-      const gpuUsage = Math.min(100, Math.max(0, Math.round(cpu * 0.4 + Math.random() * 15 - 5)));
+          const mainDisk = o.disks?.[0] || { used: 0, usage: 0, total: 1, mount: "C:" };
 
-      // Temperature simulation (40-85°C range)
-      const cpuTemp = Math.round(40 + cpu * 0.45 + Math.random() * 3);
-      const gpuTemp = Math.round(35 + gpuUsage * 0.45 + Math.random() * 3);
-
-      // Rolling history for sparkline
-      const h = historyRef.current;
-      h.push(cpu);
-      if (h.length > 30) h.shift();
-      historyRef.current = h;
-      setHistory([...h]);
-
-      // Simulate disk usage (500GB total, variable usage)
-      const diskUsed = 120 + Math.random() * 30;
-
-      // Network throughput estimation
-      const now = performance.now();
-      let rxBytes = 0, txBytes = 0;
-      if ((performance as any).getEntriesByType) {
-        const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
-        if (resources.length > 0) {
-          rxBytes = resources.reduce((s, r) => s + (r.transferSize || 0), 0);
-          txBytes = resources.reduce((s, r) => s + (r.encodedBodySize || 0), 0);
+          setVitals({
+            cpu: o.cpu,
+            cpuTemp: o.gpu.temp ?? null,
+            memory: Number((o.memory.used / (1024 ** 3)).toFixed(1)),
+            memoryTotal: Number((o.memory.total / (1024 ** 3)).toFixed(0)),
+            memoryPercent: o.memory.percent,
+            gpuUsage: o.gpu.usage >= 0 ? o.gpu.usage : 0,
+            gpuTemp: o.gpu.temp ?? null,
+            gpuMemory: o.gpu.memory ?? null,
+            battery: o.battery.level ?? null,
+            batteryCharging: o.battery.charging ?? null,
+            diskUsage: Number((mainDisk.used / (1024 ** 3)).toFixed(0)),
+            diskTotal: Number((mainDisk.total / (1024 ** 3)).toFixed(0)),
+            network: o.disks?.map(d => ({ mount: d.mount, usage: d.usage })) || [],
+            networkRx: Math.round(rxSpeed),
+            networkTx: Math.round(txSpeed),
+            processes: o.processes,
+            uptime: o.uptime,
+            ping: conn?.rtt ? Math.round(conn.rtt) : Math.round(12 + Math.random() * 20),
+            connected: true,
+          });
         }
+      } catch {
+        // Desktop service not available — keep showing last known data
       }
-      const dt = (now - prevTs) / 1000;
-      const rxSpeed = dt > 0 ? Math.max(0, (rxBytes - prevRx) / dt) : 0;
-      const txSpeed = dt > 0 ? Math.max(0, (txBytes - prevTx) / dt) : 0;
-      if (dt > 0.5) {
-        prevRx = rxBytes;
-        prevTx = txBytes;
-        prevTs = now;
-      }
-
-      // Process count simulation
-      const procCount = Math.round(180 + Math.sin(Date.now() / 10000) * 30 + Math.random() * 20);
-
-      setVitals({
-        cpu,
-        cpuTemp,
-        memory: Math.round(memEstimate * 100) / 100,
-        memoryTotal: Math.round(memTotal * 100) / 100,
-        memoryPercent: memPct,
-        gpuUsage,
-        gpuTemp,
-        gpuMemory: null,
-        battery: batteryManager?.level !== undefined ? Math.round(batteryManager.level * 100) : null,
-        batteryCharging: batteryManager?.charging ?? null,
-        diskUsage: Math.round(diskUsed),
-        diskTotal: 500,
-        networkRx: Math.round(rxSpeed),
-        networkTx: Math.round(txSpeed),
-        processes: procCount,
-        uptime: formatUptime(Math.floor(performance.now() / 1000)),
-        ping: conn?.rtt ? Math.round(conn.rtt) : Math.round(12 + Math.random() * 20),
-      });
     };
 
-    tick();
-    const interval = setInterval(tick, 2000);
+    fetchVitals();
+    const interval = setInterval(fetchVitals, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -247,11 +218,16 @@ export function VitalsPanel() {
 
       {/* Header */}
       <div className="relative flex items-center gap-2 px-3 py-2.5 border-b border-white/5">
-        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_#fbbf24] animate-pulse" />
+        <span className={`w-1.5 h-1.5 rounded-full ${vitals.connected ? "bg-emerald-400 shadow-[0_0_6px_#22c55e]" : "bg-amber-400 shadow-[0_0_6px_#fbbf24]"} animate-pulse`} />
         <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/50">
           Vitals
         </span>
-        <span className="ml-auto text-[9px] text-white/20 font-mono">v1.2</span>
+        {!vitals.connected && (
+          <span className="ml-auto text-[7px] text-amber-500/60 font-mono">offline</span>
+        )}
+        {vitals.connected && (
+          <span className="ml-auto text-[9px] text-white/20 font-mono">v1.2.1</span>
+        )}
       </div>
 
       <div className="flex-1 px-3 py-3 space-y-3 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.04) transparent" }}>
@@ -314,6 +290,11 @@ export function VitalsPanel() {
                   {vitals.gpuTemp}°C
                 </span>
               )}
+              {vitals.gpuMemory !== null && (
+                <span className="text-[7px] font-mono tabular-nums text-white/30">
+                  VRAM {vitals.gpuMemory}%
+                </span>
+              )}
             </div>
           </div>
           <MiniBar value={vitals.gpuUsage} max={100} color={gpuColor} height={2} />
@@ -337,7 +318,7 @@ export function VitalsPanel() {
 
           {/* Heap sub-metric */}
           <div className="flex items-center justify-between">
-            <span className="text-[7px] text-white/25 font-mono">Heap</span>
+            <span className="text-[7px] text-white/25 font-mono">Usage</span>
             <span className="text-[8px] font-mono tabular-nums text-white/40">{vitals.memoryPercent}%</span>
           </div>
         </div>
@@ -347,9 +328,9 @@ export function VitalsPanel() {
           <StatRow
             icon={<HardDrive className="w-2.5 h-2.5" />}
             label="Disk (C:)"
-            value={`${vitals.diskUsage.toFixed(0)} GB`}
+            value={`${vitals.diskUsage} GB`}
             subValue={`/ ${vitals.diskTotal} GB`}
-            bar={{ value: vitals.diskUsage, max: vitals.diskTotal, color: "#60a5fa" }}
+            bar={{ value: vitals.diskUsage, max: Math.max(vitals.diskTotal, 1), color: "#60a5fa" }}
           />
           <StatRow
             icon={<Zap className="w-2.5 h-2.5" />}

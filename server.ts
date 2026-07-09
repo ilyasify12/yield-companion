@@ -73,6 +73,26 @@ app.get("/api/version", (req, res) => {
   res.json({ version: APP_VERSION });
 });
 
+// ── System vitals proxy → desktop service on port 3001 ──────────────
+app.get("/api/vitals", async (_req, res) => {
+  try {
+    const response = await fetch("http://127.0.0.1:3001/api/tools/getSystemVitals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) {
+      res.json({ ok: false, error: `Desktop service: HTTP ${response.status}` });
+      return;
+    }
+    const data = await response.json();
+    res.json(data);
+  } catch (err: any) {
+    res.json({ ok: false, error: err.message || "Desktop service unreachable" });
+  }
+});
+
 // ── Update check: fetches latest release from GitHub ──────────────
 app.get("/api/check-update", async (req, res) => {
   try {
