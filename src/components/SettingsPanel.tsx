@@ -586,7 +586,7 @@ export function SettingsPanel({
           <div className="px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-[11px] text-gray-400">Version</span>
-              <span className="text-[11px] font-mono text-gray-200">1.2.0</span>
+              <span className="text-[11px] font-mono text-gray-200">1.2.1</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[11px] text-gray-400">Model</span>
