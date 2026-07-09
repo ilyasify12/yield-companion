@@ -100,7 +100,7 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -111,7 +111,7 @@
       "uninstallDisplayName": "YIELD COMPANION",
       "runAfterFinish": true,
       "differentialPackage": true,
-      "installerIcon": "assets/icon.png",
+      "installerIcon": "assets/icon.ico",
       "artifactName": "YIELD-COMPANION-Setup-${version}.${ext}"
     },
     "portable": {
